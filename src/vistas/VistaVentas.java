@@ -1,12 +1,17 @@
 package vistas;
 
 import conexion.ConexionBD;
+import controlador.ControladorInventario;
 import modelo.Usuario;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.Timer;
@@ -21,115 +26,142 @@ public class VistaVentas extends JFrame {
     private DefaultTableModel modelo;
     private Map<String, Producto> productosMap = new HashMap<>();
 
-    // ✅ Constructor que recibe el usuario desde el login
     public VistaVentas(Usuario usuario) {
         this.usuarioActual = usuario;
         setTitle("GESTIÓN DE VENTAS - Usuario: " + (usuario != null ? usuario.getNombreCompleto() : "Invitado"));
         setSize(950, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(null);
-        inicializarComponentes();
+
+        FondoPanel fondo = new FondoPanel("B:/Angelo/Documents/NetBeansProjects/PasteleriaDucelia/src/images/fondoLila.png");
+        fondo.setLayout(null);
+        setContentPane(fondo);
+
+        inicializarComponentes(fondo);
     }
 
-    // ✅ Constructor vacío (por si lo llamas sin usuario)
-    public VistaVentas() {
-        this(null);
+    // Panel personalizado
+    static class FondoPanel extends JPanel {
+
+        private Image imagen;
+
+        public FondoPanel(String ruta) {
+            this.imagen = new ImageIcon(ruta).getImage();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (imagen != null) {
+                g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
     }
 
-    private void inicializarComponentes() {
-
+    private void inicializarComponentes(JPanel fondo) {
         Font fTitulo = new Font("Segoe UI", Font.BOLD, 22);
         Font fLabel = new Font("Segoe UI", Font.BOLD, 14);
 
         JLabel lblTitulo = new JLabel("GESTIÓN DE VENTAS");
         lblTitulo.setFont(fTitulo);
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(20, 10, 400, 40);
-        add(lblTitulo);
+        fondo.add(lblTitulo);
 
         JLabel lblCliente = new JLabel("Cliente");
         lblCliente.setFont(fLabel);
+        lblCliente.setForeground(Color.WHITE);
         lblCliente.setBounds(20, 60, 100, 25);
-        add(lblCliente);
+        fondo.add(lblCliente);
+
         txtCliente = new JTextField();
         txtCliente.setBounds(20, 85, 250, 30);
-        add(txtCliente);
+        fondo.add(txtCliente);
 
         JLabel lblPrecio = new JLabel("Precio");
         lblPrecio.setFont(fLabel);
+        lblPrecio.setForeground(Color.WHITE);
         lblPrecio.setBounds(320, 60, 100, 25);
-        add(lblPrecio);
+        fondo.add(lblPrecio);
+
         txtPrecio = new JTextField();
         txtPrecio.setBounds(320, 85, 200, 30);
         txtPrecio.setEditable(false);
-        add(txtPrecio);
+        fondo.add(txtPrecio);
 
         JLabel lblDescripcion = new JLabel("Descripción");
         lblDescripcion.setFont(fLabel);
+        lblDescripcion.setForeground(Color.WHITE);
         lblDescripcion.setBounds(540, 60, 100, 25);
-        add(lblDescripcion);
+        fondo.add(lblDescripcion);
+
         txtDescripcion = new JTextArea();
         txtDescripcion.setEditable(false);
         JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
         scrollDesc.setBounds(540, 85, 300, 60);
-        add(scrollDesc);
+        fondo.add(scrollDesc);
 
         JLabel lblPostre = new JLabel("Postre");
         lblPostre.setFont(fLabel);
+        lblPostre.setForeground(Color.WHITE);
         lblPostre.setBounds(20, 130, 100, 25);
-        add(lblPostre);
+        fondo.add(lblPostre);
+
         cmbPostre = new JComboBox<>();
         cmbPostre.setBounds(20, 155, 250, 30);
-        add(cmbPostre);
+        fondo.add(cmbPostre);
 
         JLabel lblCantidad = new JLabel("Cantidad");
         lblCantidad.setFont(fLabel);
+        lblCantidad.setForeground(Color.WHITE);
         lblCantidad.setBounds(320, 130, 100, 25);
-        add(lblCantidad);
+        fondo.add(lblCantidad);
+
         txtCantidad = new JTextField();
         txtCantidad.setBounds(320, 155, 200, 30);
-        add(txtCantidad);
+        fondo.add(txtCantidad);
 
         JButton btnAgregar = new JButton("Agregar");
         btnAgregar.setBackground(Color.YELLOW);
         btnAgregar.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnAgregar.setBounds(750, 160, 100, 35);
-        add(btnAgregar);
+        fondo.add(btnAgregar);
 
         JButton btnPagar = new JButton("PAGAR");
         btnPagar.setBackground(Color.GREEN);
         btnPagar.setFont(new Font("Segoe UI", Font.BOLD, 18));
         btnPagar.setBounds(750, 210, 120, 50);
-        add(btnPagar);
+        fondo.add(btnPagar);
 
-        // Tabla
         modelo = new DefaultTableModel(new Object[]{"ID", "Postre", "Descripción", "Precio", "Cantidad"}, 0);
         JTable tabla = new JTable(modelo);
         JScrollPane scrollTabla = new JScrollPane(tabla);
         scrollTabla.setBounds(20, 270, 880, 250);
-        add(scrollTabla);
+        fondo.add(scrollTabla);
 
-        // Total
         JLabel lblTotalTxt = new JLabel("Total:");
         lblTotalTxt.setFont(fLabel);
+        lblTotalTxt.setForeground(Color.WHITE);
         lblTotalTxt.setBounds(20, 540, 100, 25);
-        add(lblTotalTxt);
+        fondo.add(lblTotalTxt);
 
         lblTotal = new JLabel("S/0.00");
         lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTotal.setForeground(Color.WHITE);
         lblTotal.setBounds(70, 530, 200, 40);
-        add(lblTotal);
+        fondo.add(lblTotal);
 
-        // Fecha y hora
         lblFecha = new JLabel();
         lblFecha.setFont(fLabel);
+        lblFecha.setForeground(Color.WHITE);
         lblFecha.setBounds(700, 520, 100, 25);
-        add(lblFecha);
+        fondo.add(lblFecha);
 
         lblHora = new JLabel();
         lblHora.setFont(fLabel);
+        lblHora.setForeground(Color.WHITE);
         lblHora.setBounds(820, 520, 100, 25);
-        add(lblHora);
+        fondo.add(lblHora);
 
         // 🔹 Botones inferiores (más abajo)
         JButton btnEliminar = new JButton("Eliminar");
@@ -147,6 +179,7 @@ public class VistaVentas extends JFrame {
 
         // Acciones
         cargarProductos();
+        verificarAlertas();
 
         cmbPostre.addActionListener(e -> {
             String seleccionado = (String) cmbPostre.getSelectedItem();
@@ -263,7 +296,16 @@ public class VistaVentas extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new VistaVentas().setVisible(true));
+    private void verificarAlertas() {
+        ControladorInventario controlador = new ControladorInventario();
+        List<String> alertas = controlador.verificarAlertas();
+        if (!alertas.isEmpty()) {
+            StringBuilder mensaje = new StringBuilder("⚠️ Se detectaron productos con problemas:\n\n");
+            for (String a : alertas) {
+                mensaje.append(a).append("\n");
+            }
+            JOptionPane.showMessageDialog(this, mensaje.toString(), "Alertas de Inventario", JOptionPane.WARNING_MESSAGE);
+        }
     }
+
 }

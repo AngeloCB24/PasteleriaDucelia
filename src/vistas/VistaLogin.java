@@ -18,20 +18,29 @@ public class VistaLogin extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel principal con imagen de fondo
-        JLabel fondo = new JLabel();
-        fondo.setLayout(new GridBagLayout());
-        fondo.setIcon(new ImageIcon("src/recursos/fondo_login.jpg")); // ← Cambia esta ruta si tu imagen está en otra carpeta
+        // ✅ Panel con imagen de fondo personalizada
+        JPanel panelFondo = new JPanel() {
+            Image fondo = new ImageIcon("B:/Angelo/Documents/NetBeansProjects/PasteleriaDucelia/src/images/portadaLogin.png").getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Escalar la imagen al tamaño del panel
+                g.drawImage(fondo, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        panelFondo.setLayout(new GridBagLayout());
+
+        // Configuración del panel de login
+        JPanel panelLogin = new JPanel(new GridBagLayout());
+        panelLogin.setOpaque(false);
+        panelLogin.setPreferredSize(new Dimension(400, 250));
+        panelLogin.setBorder(BorderFactory.createTitledBorder("Acceso al sistema"));
+        panelLogin.setBackground(new Color(255, 255, 255, 180));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        JPanel panelLogin = new JPanel(new GridBagLayout());
-        panelLogin.setOpaque(false);
-        panelLogin.setPreferredSize(new Dimension(400, 300));
-        panelLogin.setBorder(BorderFactory.createTitledBorder("Acceso al sistema"));
-        panelLogin.setBackground(new Color(255, 255, 255, 150));
 
         JLabel lblUsuario = new JLabel("Usuario:");
         JLabel lblContrasena = new JLabel("Contraseña:");
@@ -53,8 +62,8 @@ public class VistaLogin extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         panelLogin.add(btnLogin, gbc);
 
-        fondo.add(panelLogin, gbc);
-        add(fondo, BorderLayout.CENTER);
+        panelFondo.add(panelLogin, gbc);
+        add(panelFondo, BorderLayout.CENTER);
 
         // Acción del botón
         btnLogin.addActionListener(e -> iniciarSesion());

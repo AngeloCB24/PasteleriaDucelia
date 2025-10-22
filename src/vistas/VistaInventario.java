@@ -15,13 +15,22 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+// Importar componentes gráficos específicos
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+// Importar componentes gráficos
+import java.awt.*;
+
 public class VistaInventario extends JFrame {
 
     private JTextField txtBuscar;
     private JTable tablaInventario;
     private JButton btnBuscar, btnAgregar, btnEditar, btnEliminar, btnExportar;
     private JLabel lblFecha, lblHora;
-
     private ControladorInventario controlador = new ControladorInventario();
     private Timer timer;
 
@@ -30,86 +39,74 @@ public class VistaInventario extends JFrame {
         setSize(1000, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(null);
-        this.getContentPane().setBackground(java.awt.Color.WHITE);
+
+        // Panel de fondo escalable
+        FondoPanel fondo = new FondoPanel("B:/Angelo/Documents/NetBeansProjects/PasteleriaDucelia/src/images/fondoLila.png");
+        fondo.setLayout(null);
+        setContentPane(fondo);
 
         // --- Título ---
         JLabel lblTitulo = new JLabel("GESTIÓN DE INVENTARIO", SwingConstants.CENTER);
-        lblTitulo.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 26));
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(0, 10, 1000, 40);
-        add(lblTitulo);
+        fondo.add(lblTitulo);
 
         // --- Buscar ---
         JLabel lblBuscar = new JLabel("Buscar");
-        lblBuscar.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
+        lblBuscar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblBuscar.setForeground(Color.WHITE);
         lblBuscar.setBounds(30, 70, 80, 25);
-        add(lblBuscar);
+        fondo.add(lblBuscar);
 
         txtBuscar = new JTextField();
-        txtBuscar.setBackground(new java.awt.Color(173, 216, 230));
+        txtBuscar.setBackground(new Color(255, 255, 255, 200));
         txtBuscar.setBounds(30, 95, 200, 30);
-        add(txtBuscar);
+        fondo.add(txtBuscar);
 
         btnBuscar = new JButton("🔍");
         btnBuscar.setBounds(235, 95, 45, 30);
-        btnBuscar.setBackground(java.awt.Color.WHITE);
-        add(btnBuscar);
+        fondo.add(btnBuscar);
 
-        // --- Botones principales ---
         btnAgregar = new JButton("Agregar");
-        btnAgregar.setBackground(new java.awt.Color(46, 204, 113));
-        btnAgregar.setForeground(java.awt.Color.BLACK);
-        btnAgregar.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
         btnAgregar.setBounds(300, 95, 100, 30);
-        add(btnAgregar);
+        fondo.add(btnAgregar);
 
         btnEditar = new JButton("Editar");
-        btnEditar.setBackground(new java.awt.Color(155, 153, 255));
-        btnEditar.setForeground(java.awt.Color.BLACK);
-        btnEditar.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
         btnEditar.setBounds(410, 95, 100, 30);
-        add(btnEditar);
+        fondo.add(btnEditar);
 
         btnEliminar = new JButton("Eliminar");
-        btnEliminar.setBackground(new java.awt.Color(255, 80, 80));
-        btnEliminar.setForeground(java.awt.Color.BLACK);
-        btnEliminar.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
         btnEliminar.setBounds(520, 95, 100, 30);
-        add(btnEliminar);
+        fondo.add(btnEliminar);
 
-        // --- Botón Exportar ---
         btnExportar = new JButton("Exportar a Excel");
-        btnExportar.setBackground(new java.awt.Color(255, 215, 0));
-        btnExportar.setForeground(java.awt.Color.BLACK);
-        btnExportar.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
         btnExportar.setBounds(640, 95, 160, 30);
-        add(btnExportar);
+        fondo.add(btnExportar);
 
-        // --- Fecha y hora ---
         lblFecha = new JLabel("📅 --/--/--");
-        lblFecha.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+        lblFecha.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblFecha.setForeground(Color.WHITE);
         lblFecha.setBounds(820, 95, 120, 30);
-        add(lblFecha);
+        fondo.add(lblFecha);
 
         lblHora = new JLabel("🕒 00:00");
-        lblHora.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+        lblHora.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblHora.setForeground(Color.WHITE);
         lblHora.setBounds(920, 95, 100, 30);
-        add(lblHora);
+        fondo.add(lblHora);
 
-        // --- Tabla ---
         String[] columnas = {"ID", "Código", "Nombre", "Stock", "Stock Mínimo", "Precio", "F. Venc", "Unidad", "Categoría", "Proveedor"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tablaInventario = new JTable(modelo);
         tablaInventario.setRowHeight(25);
-        tablaInventario.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
-        tablaInventario.getTableHeader().setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
 
         JScrollPane scroll = new JScrollPane(tablaInventario);
         scroll.setBounds(30, 150, 930, 380);
-        add(scroll);
+        fondo.add(scroll);
 
-        // --- Funcionalidades ---
         cargarProductos();
+        verificarAlertas();
         iniciarReloj();
 
         btnBuscar.addActionListener(e -> buscarProducto());
@@ -119,7 +116,24 @@ public class VistaInventario extends JFrame {
         btnExportar.addActionListener(e -> exportarExcel());
     }
 
-    // 🕒 Reloj
+    // Panel personalizado para fondo escalable
+    static class FondoPanel extends JPanel {
+
+        private Image imagen;
+
+        public FondoPanel(String ruta) {
+            this.imagen = new ImageIcon(ruta).getImage();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (imagen != null) {
+                g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
+    }
+
     private void iniciarReloj() {
         timer = new Timer(1000, e -> {
             Date now = new Date();
@@ -150,8 +164,8 @@ public class VistaInventario extends JFrame {
         modelo.setRowCount(0);
         List<Producto> lista = controlador.listarProductos();
         for (Producto p : lista) {
-            if (p.getNombre().toLowerCase().contains(filtro) ||
-                p.getCodigo().toLowerCase().contains(filtro)) {
+            if (p.getNombre().toLowerCase().contains(filtro)
+                    || p.getCodigo().toLowerCase().contains(filtro)) {
                 modelo.addRow(new Object[]{
                     p.getId(), p.getCodigo(), p.getNombre(), p.getStock(),
                     p.getStockMin(), p.getPrecio(), p.getFechaVencimiento(),
@@ -249,6 +263,18 @@ public class VistaInventario extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "❌ Error al eliminar el producto.");
             }
+        }
+    }
+
+    // ⚠️ Verifica alertas de inventario
+    private void verificarAlertas() {
+        List<String> alertas = controlador.verificarAlertas();
+        if (!alertas.isEmpty()) {
+            StringBuilder mensaje = new StringBuilder("Se detectaron las siguientes alertas:\n\n");
+            for (String a : alertas) {
+                mensaje.append(a).append("\n");
+            }
+            JOptionPane.showMessageDialog(this, mensaje.toString(), "⚠️ Alertas de Inventario", JOptionPane.WARNING_MESSAGE);
         }
     }
 
