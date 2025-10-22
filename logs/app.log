@@ -1,0 +1,5 @@
+2025-10-22 06:57:33 [main] INFO  app - Prueba de Logback - info
+2025-10-22 06:57:33 [main] WARN  app - Prueba de Logback - warn
+2025-10-22 06:57:33 [main] ERROR app - Prueba de Logback - error con excepción
+java.lang.RuntimeException: Excepción de prueba
+	at utilidades.MainTest.main(MainTest.java:11)
