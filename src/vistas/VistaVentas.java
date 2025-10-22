@@ -168,14 +168,27 @@ public class VistaVentas extends JFrame {
         btnEliminar.setBackground(Color.RED);
         btnEliminar.setForeground(Color.WHITE);
         btnEliminar.setFont(fLabel);
-        btnEliminar.setBounds(480, 565, 110, 35); // ⬇ más abajo
+        btnEliminar.setBounds(480, 565, 110, 35);
         add(btnEliminar);
 
         JButton btnLimpiar = new JButton("Limpiar");
         btnLimpiar.setBackground(Color.ORANGE);
         btnLimpiar.setFont(fLabel);
-        btnLimpiar.setBounds(610, 565, 110, 35); // ⬇ más abajo
+        btnLimpiar.setBounds(610, 565, 110, 35);
         add(btnLimpiar);
+
+// 🔙 Botón Atrás (colocado a la derecha del botón "Eliminar")
+        JButton btnAtras = new JButton("Atrás");
+        btnAtras.setBackground(new Color(200, 200, 200));
+        btnAtras.setFont(fLabel);
+        btnAtras.setBounds(740, 565, 110, 35); // 👉 A la derecha del botón Limpiar
+        add(btnAtras);
+
+// Acción del botón Atrás
+        btnAtras.addActionListener(e -> {
+            new MenuPrincipal(usuarioActual != null ? usuarioActual : new Usuario()).setVisible(true);
+            dispose();
+        });
 
         // Acciones
         cargarProductos();

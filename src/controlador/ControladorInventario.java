@@ -14,7 +14,7 @@ public class ControladorInventario {
     private MovimientoInventarioDAO movDAO = new MovimientoInventarioDAO();
 
     public List<Producto> listarProductos() {
-        return productoDAO.listarTodos();
+        return productoDAO.listarProductos();
     }
 
     public boolean crearProducto(Producto p) {
@@ -64,7 +64,7 @@ public class ControladorInventario {
     // 🟠 Verifica si hay productos con bajo stock o próximos a vencer
     public List<String> verificarAlertas() {
         List<String> alertas = new ArrayList<>();
-        List<Producto> productos = productoDAO.listarTodos();
+        List<Producto> productos = productoDAO.listarProductos();
 
         Date hoy = new Date();
         long tresDias = 3L * 24 * 60 * 60 * 1000; // 3 días en milisegundos

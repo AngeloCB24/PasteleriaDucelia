@@ -9,10 +9,15 @@ import java.util.List;
 
 public class ProductoDAO {
 
-    public List<Producto> listarTodos() {
+    public List<Producto> listarProductos() {
         List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT id, code, name, description, category_id, supplier_id, unit, stock, stock_min, price, expiration_date FROM products ORDER BY name";
-        try (Connection c = ConexionBD.getConexion(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        String sql = """
+        SELECT p.*, s.name AS proveedor_nombre, s.phone AS proveedor_telefono
+        FROM products p
+        LEFT JOIN suppliers s ON p.supplier_id = s.id
+    """;
+
+        try (Connection con = ConexionBD.getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Producto p = new Producto();
@@ -20,19 +25,18 @@ public class ProductoDAO {
                 p.setCodigo(rs.getString("code"));
                 p.setNombre(rs.getString("name"));
                 p.setDescripcion(rs.getString("description"));
-                int cat = rs.getInt("category_id");
-                if (!rs.wasNull()) {
-                    p.setCategoriaId(cat);
-                }
-                int sup = rs.getInt("supplier_id");
-                if (!rs.wasNull()) {
-                    p.setProveedorId(sup);
-                }
-                p.setUnidad(rs.getString("unit"));
                 p.setStock(rs.getInt("stock"));
                 p.setStockMin(rs.getInt("stock_min"));
                 p.setPrecio(rs.getDouble("price"));
                 p.setFechaVencimiento(rs.getDate("expiration_date"));
+                p.setUnidad(rs.getString("unit"));
+                p.setCategoriaId(rs.getInt("category_id"));
+                p.setProveedorId(rs.getInt("supplier_id"));
+
+                // 👇 nuevos campos
+                p.setProveedorNombre(rs.getString("proveedor_nombre"));
+                p.setProveedorTelefono(rs.getString("proveedor_telefono"));
+
                 lista.add(p);
             }
         } catch (SQLException e) {

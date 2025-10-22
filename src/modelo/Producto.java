@@ -15,6 +15,8 @@ public class Producto {
     private int stockMin;        // stock_min
     private double precio;       // price
     private Date fechaVencimiento; // expiration_date
+    private String proveedorNombre;
+    private String proveedorTelefono;
 
     public Producto() {
     }
@@ -106,5 +108,21 @@ public class Producto {
 
     public void setFechaVencimiento(Date fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
+    }
+
+    public String getProveedorNombre() {
+        return proveedorNombre;
+    }
+
+    public void setProveedorNombre(String proveedorNombre) {
+        this.proveedorNombre = proveedorNombre;
+    }
+
+    public String getProveedorTelefono() {
+        return proveedorTelefono;
+    }
+
+    public void setProveedorTelefono(String proveedorTelefono) {
+        this.proveedorTelefono = proveedorTelefono;
     }
 }

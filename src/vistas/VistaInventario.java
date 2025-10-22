@@ -27,6 +27,7 @@ import java.awt.*;
 
 public class VistaInventario extends JFrame {
 
+    private modelo.Usuario usuarioActual;
     private JTextField txtBuscar;
     private JTable tablaInventario;
     private JButton btnBuscar, btnAgregar, btnEditar, btnEliminar, btnExportar;
@@ -84,6 +85,20 @@ public class VistaInventario extends JFrame {
         btnExportar.setBounds(640, 95, 160, 30);
         fondo.add(btnExportar);
 
+        // 🔙 Botón Atrás
+        JButton btnAtras = new JButton("Atrás");
+        btnAtras.setBackground(new Color(200, 200, 200));
+        btnAtras.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnAtras.setBounds(30, 540, 100, 35);
+        add(btnAtras);
+
+        // Acción del botón
+        btnAtras.addActionListener(e -> {
+            // Si tienes una variable usuarioActual, pásala aquí:
+            new MenuPrincipal(usuarioActual != null ? usuarioActual : new modelo.Usuario()).setVisible(true);
+            dispose();
+        });
+
         lblFecha = new JLabel("📅 --/--/--");
         lblFecha.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblFecha.setForeground(Color.WHITE);
@@ -96,7 +111,7 @@ public class VistaInventario extends JFrame {
         lblHora.setBounds(920, 95, 100, 30);
         fondo.add(lblHora);
 
-        String[] columnas = {"ID", "Código", "Nombre", "Stock", "Stock Mínimo", "Precio", "F. Venc", "Unidad", "Categoría", "Proveedor"};
+        String[] columnas = {"ID", "Código", "Nombre", "Stock", "Stock Mínimo", "Precio", "F. Venc", "Unidad", "Categoría", "Proveedor", "Teléfono"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tablaInventario = new JTable(modelo);
         tablaInventario.setRowHeight(25);
@@ -114,6 +129,7 @@ public class VistaInventario extends JFrame {
         btnEditar.addActionListener(e -> editarProducto());
         btnEliminar.addActionListener(e -> eliminarProducto());
         btnExportar.addActionListener(e -> exportarExcel());
+
     }
 
     // Panel personalizado para fondo escalable
@@ -152,7 +168,8 @@ public class VistaInventario extends JFrame {
             modelo.addRow(new Object[]{
                 p.getId(), p.getCodigo(), p.getNombre(), p.getStock(),
                 p.getStockMin(), p.getPrecio(), p.getFechaVencimiento(),
-                p.getUnidad(), p.getCategoriaId(), p.getProveedorId()
+                p.getUnidad(), p.getCategoriaId(),
+                p.getProveedorNombre(), p.getProveedorTelefono()
             });
         }
     }
@@ -316,4 +333,5 @@ public class VistaInventario extends JFrame {
             JOptionPane.showMessageDialog(this, "❌ Error al exportar: " + ex.getMessage());
         }
     }
+
 }

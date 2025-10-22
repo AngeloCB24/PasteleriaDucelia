@@ -9,6 +9,6 @@ public class ControladorProducto {
     private final ProductoDAO dao = new ProductoDAO();
 
     public List<Producto> listarProductos() {
-        return dao.listarTodos();
+        return dao.listarProductos();
     }
 }
