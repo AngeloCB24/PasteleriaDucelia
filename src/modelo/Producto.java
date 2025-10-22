@@ -5,17 +5,21 @@ import java.sql.Date;
 public class Producto {
 
     private int id;
-    private String codigo;
-    private String nombre;
-    private String descripcion;
-    private Integer idCategoria;
-    private Integer idProveedor;
-    private String unidad;
-    private int stock;
-    private int stockMinimo;
-    private double precio;
-    private Date fechaVencimiento;
+    private String codigo;       // code
+    private String nombre;       // name
+    private String descripcion;  // description
+    private Integer categoriaId; // category_id
+    private Integer proveedorId; // supplier_id
+    private String unidad;       // unit
+    private int stock;           // stock
+    private int stockMin;        // stock_min
+    private double precio;       // price
+    private Date fechaVencimiento; // expiration_date
 
+    public Producto() {
+    }
+
+    // getters y setters
     public int getId() {
         return id;
     }
@@ -48,20 +52,20 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public Integer getIdCategoria() {
-        return idCategoria;
+    public Integer getCategoriaId() {
+        return categoriaId;
     }
 
-    public void setIdCategoria(Integer idCategoria) {
-        this.idCategoria = idCategoria;
+    public void setCategoriaId(Integer categoriaId) {
+        this.categoriaId = categoriaId;
     }
 
-    public Integer getIdProveedor() {
-        return idProveedor;
+    public Integer getProveedorId() {
+        return proveedorId;
     }
 
-    public void setIdProveedor(Integer idProveedor) {
-        this.idProveedor = idProveedor;
+    public void setProveedorId(Integer proveedorId) {
+        this.proveedorId = proveedorId;
     }
 
     public String getUnidad() {
@@ -80,12 +84,12 @@ public class Producto {
         this.stock = stock;
     }
 
-    public int getStockMinimo() {
-        return stockMinimo;
+    public int getStockMin() {
+        return stockMin;
     }
 
-    public void setStockMinimo(int stockMinimo) {
-        this.stockMinimo = stockMinimo;
+    public void setStockMin(int stockMin) {
+        this.stockMin = stockMin;
     }
 
     public double getPrecio() {

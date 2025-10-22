@@ -4,14 +4,15 @@ import modelo.Usuario;
 import javax.swing.*;
 import java.awt.*;
 
-public class VistaPrincipal extends JFrame {
+public class VistaVentas extends JFrame {
+
     private Usuario usuarioActual;
 
-    public VistaPrincipal(Usuario user) {
+    public VistaVentas(Usuario user) {
         this.usuarioActual = user;
         setTitle("Sistema de Ventas - " + user.getNombreCompleto());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(900,600);
+        setSize(900, 600);
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -29,5 +30,9 @@ public class VistaPrincipal extends JFrame {
 
         btnProductos.addActionListener(e -> new VistaProductos().setVisible(true));
         btnPedidos.addActionListener(e -> new VistaPedidos(usuarioActual).setVisible(true));
+    }
+
+    public VistaVentas() {
+        this(null);
     }
 }

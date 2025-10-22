@@ -16,6 +16,7 @@ public class VistaProductos extends JFrame {
 
         String[] columnas = {"ID","Código","Nombre","Stock","Stock Mínimo","Precio","Vencimiento"};
         DefaultTableModel modelo = new DefaultTableModel(columnas,0){
+            @Override
             public boolean isCellEditable(int r,int c){return false;}
         };
         JTable tabla = new JTable(modelo);
@@ -25,7 +26,7 @@ public class VistaProductos extends JFrame {
         for (Producto p : lista) {
             modelo.addRow(new Object[]{
                 p.getId(), p.getCodigo(), p.getNombre(), p.getStock(),
-                p.getStockMinimo(), p.getPrecio(), p.getFechaVencimiento()
+                p.getStockMin(), p.getPrecio(), p.getFechaVencimiento()
             });
         }
     }
