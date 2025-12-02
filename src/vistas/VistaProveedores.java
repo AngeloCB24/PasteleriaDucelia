@@ -18,23 +18,34 @@ public class VistaProveedores extends JFrame {
 
     public VistaProveedores(Usuario usuarioActual) {
 
-        this.usuarioActual = usuarioActual;  // 🔥 guardar correctamente el usuario
+        this.usuarioActual = usuarioActual;
 
-        setTitle("GESTIÓN DE PROVEEDORES - Usuario: " +
-                (usuarioActual != null ? usuarioActual.getNombreCompleto() : "Invitado"));
+        setTitle("GESTIÓN DE PROVEEDORES - Usuario: "
+                + (usuarioActual != null ? usuarioActual.getNombreCompleto() : "Invitado"));
 
-        setSize(700, 500);
-        setLocationRelativeTo(null);
+        // Pantalla completa
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // ⬅️ FONDO LILA
+        // Fondo
         FondoPanel fondo = new FondoPanel("/images/fondoLila.png");
         fondo.setLayout(null);
         setContentPane(fondo);
 
+        // Dimensiones de pantalla
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = screenSize.width;
+        int height = screenSize.height;
+
+        int fontSize = width / 80;
+        Font fTitulo = new Font("Segoe UI", Font.BOLD, fontSize + 20);
+        Font fLabel = new Font("Segoe UI", Font.BOLD, fontSize + 5);
+
         JLabel lblTitulo = new JLabel("GESTIÓN DE PROVEEDORES", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitulo.setFont(fTitulo);
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(0, 10, 700, 40);
+        lblTitulo.setBounds(0, height * 2 / 100, width, height * 5 / 100);
         fondo.add(lblTitulo);
 
         modelo = new DefaultTableModel(
@@ -42,34 +53,37 @@ public class VistaProveedores extends JFrame {
         );
 
         tabla = new JTable(modelo);
+        tabla.setFont(new Font("Segoe UI", Font.PLAIN, fontSize));
+        tabla.setRowHeight(height * 4 / 100);
 
         JScrollPane scroll = new JScrollPane(tabla);
-        scroll.setBounds(40, 70, 620, 280);
+        scroll.setBounds(width * 5 / 100, height * 12 / 100, width * 90 / 100, height * 60 / 100);
         fondo.add(scroll);
 
         JButton btnAgregar = new JButton("Agregar");
-        btnAgregar.setBounds(40, 380, 130, 35);
+        btnAgregar.setFont(fLabel);
+        btnAgregar.setBounds(width * 5 / 100, height * 80 / 100, width * 15 / 100, height * 6 / 100);
         fondo.add(btnAgregar);
 
         JButton btnEditar = new JButton("Editar");
-        btnEditar.setBounds(200, 380, 130, 35);
+        btnEditar.setFont(fLabel);
+        btnEditar.setBounds(width * 25 / 100, height * 80 / 100, width * 15 / 100, height * 6 / 100);
         fondo.add(btnEditar);
 
         JButton btnEliminar = new JButton("Eliminar");
-        btnEliminar.setBounds(360, 380, 130, 35);
+        btnEliminar.setFont(fLabel);
+        btnEliminar.setBounds(width * 45 / 100, height * 80 / 100, width * 15 / 100, height * 6 / 100);
         fondo.add(btnEliminar);
 
         JButton btnAtras = new JButton("Atrás");
-        btnAtras.setBounds(520, 380, 130, 35);
+        btnAtras.setFont(fLabel);
+        btnAtras.setBounds(width * 65 / 100, height * 80 / 100, width * 15 / 100, height * 6 / 100);
         fondo.add(btnAtras);
 
         // --- ACCIONES ---
         btnAgregar.addActionListener(e -> new FormProveedor(this::cargarTabla).setVisible(true));
-
         btnEditar.addActionListener(e -> editar());
-
         btnEliminar.addActionListener(e -> eliminar());
-
         btnAtras.addActionListener(e -> {
             new MenuPrincipal(usuarioActual).setVisible(true);
             dispose();
@@ -84,11 +98,11 @@ public class VistaProveedores extends JFrame {
 
         for (Proveedor p : lista) {
             modelo.addRow(new Object[]{
-                    p.getId(),
-                    p.getNombre(),
-                    p.getContacto(),
-                    p.getEmail(),
-                    p.getTelefono()
+                p.getId(),
+                p.getNombre(),
+                p.getContacto(),
+                p.getEmail(),
+                p.getTelefono()
             });
         }
     }
@@ -132,6 +146,7 @@ public class VistaProveedores extends JFrame {
 
     // FONDO PERSONALIZADO
     class FondoPanel extends JPanel {
+
         private Image imagen;
 
         public FondoPanel(String path) {

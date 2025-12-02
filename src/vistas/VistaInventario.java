@@ -4,13 +4,19 @@ import controlador.ControladorInventario;
 import modelo.Producto;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;  // ✔️ ESTE ES EL CORRECTO
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import javax.swing.Timer;
+
+import utilidades.ReporteInventarioPDF;
 
 // Apache POI
 import org.apache.poi.ss.usermodel.*;
@@ -18,23 +24,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-// Importar componentes gráficos
-import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import static javax.print.attribute.standard.MediaSize.Engineering.C;
-import javax.swing.table.DefaultTableModel;
-import utilidades.ReporteInventarioPDF;
-
 public class VistaInventario extends JFrame {
 
     private modelo.Usuario usuarioActual;
-
-    public VistaInventario(modelo.Usuario usuario) {
-        this.usuarioActual = usuario;
-        init();
-    }
-
     private JTextField txtBuscar;
     private JTable tablaInventario;
     private JButton btnBuscar, btnAgregar, btnEditar, btnEliminar, btnExportar, btnReporte;
@@ -42,92 +34,115 @@ public class VistaInventario extends JFrame {
     private ControladorInventario controlador = new ControladorInventario();
     private Timer timer;
 
+    public VistaInventario(modelo.Usuario usuario) {
+        this.usuarioActual = usuario;
+        init();
+    }
+
     public void init() {
         setTitle("GESTIÓN DE INVENTARIO - Usuario: "
                 + (usuarioActual != null ? usuarioActual.getNombreCompleto() : "Invitado"));
-        setSize(1025, 625);
-        setLocationRelativeTo(null);
+
+        // Pantalla completa
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Panel de fondo escalable
         FondoPanel fondo = new FondoPanel("/images/fondoLila.png");
-
         fondo.setLayout(null);
         setContentPane(fondo);
 
+        // Dimensiones de pantalla
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = screenSize.width;
+        int height = screenSize.height;
+
+        int fontSize = width / 80;
+        Font fTitulo = new Font("Segoe UI", Font.BOLD, fontSize + 20);
+        Font fLabel = new Font("Segoe UI", Font.BOLD, fontSize + 5);
+
         // --- Título ---
         JLabel lblTitulo = new JLabel("GESTIÓN DE INVENTARIO", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitulo.setFont(fTitulo);
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(0, 10, 1000, 40);
+        lblTitulo.setBounds(0, height * 2 / 100, width, height * 5 / 100);
         fondo.add(lblTitulo);
 
         // --- Buscar ---
         JLabel lblBuscar = new JLabel("Buscar");
-        lblBuscar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblBuscar.setFont(fLabel);
         lblBuscar.setForeground(Color.WHITE);
-        lblBuscar.setBounds(30, 70, 80, 25);
+        lblBuscar.setBounds(width * 3 / 100, height * 10 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblBuscar);
 
         txtBuscar = new JTextField();
-        txtBuscar.setBackground(new Color(255, 255, 255, 200));
-        txtBuscar.setBounds(30, 95, 200, 30);
+        txtBuscar.setBounds(width * 3 / 100, height * 13 / 100, width * 15 / 100, height * 5 / 100);
         fondo.add(txtBuscar);
 
-        // 🔥 CREAR BOTONES **ANTES** de usar listeners
         btnBuscar = new JButton("Buscar");
-        btnEditar = new JButton("Editar");
-        btnEliminar = new JButton("Eliminar");
-        btnExportar = new JButton("Exportar a Excel");
-        btnAgregar = new JButton("Agregar");
-
-        // Posiciones
-        btnBuscar.setBounds(235, 95, 80, 30);
+        btnBuscar.setFont(fLabel);
+        btnBuscar.setBounds(width * 20 / 100, height * 13 / 100, width * 10 / 100, height * 5 / 100);
         fondo.add(btnBuscar);
 
-        btnAgregar.setBounds(320, 95, 100, 30); // ← CENTRADO ENTRE BUSCAR Y EDITAR
+        btnAgregar = new JButton("Agregar");
+        btnAgregar.setFont(fLabel);
+        btnAgregar.setBounds(width * 32 / 100, height * 13 / 100, width * 10 / 100, height * 5 / 100);
         fondo.add(btnAgregar);
 
-        btnEditar.setBounds(430, 95, 100, 30);
+        btnEditar = new JButton("Editar");
+        btnEditar.setFont(fLabel);
+        btnEditar.setBounds(width * 44 / 100, height * 13 / 100, width * 10 / 100, height * 5 / 100);
         fondo.add(btnEditar);
 
-        btnEliminar.setBounds(540, 95, 100, 30);
+        btnEliminar = new JButton("Eliminar");
+        btnEliminar.setFont(fLabel);
+        btnEliminar.setBounds(width * 56 / 100, height * 13 / 100, width * 10 / 100, height * 5 / 100);
         fondo.add(btnEliminar);
 
-        btnExportar.setBounds(660, 95, 160, 30);
+        btnExportar = new JButton("Exportar Excel");
+        btnExportar.setFont(fLabel);
+        btnExportar.setBounds(width * 68 / 100, height * 13 / 100, width * 15 / 100, height * 5 / 100);
         fondo.add(btnExportar);
 
-        JButton btnReporte = new JButton("Generar Reporte PDF");
-        btnReporte.setBounds(780, 540, 180, 40);
-        add(btnReporte);
+        btnReporte = new JButton("Reporte PDF");
+        btnReporte.setFont(fLabel);
+        btnReporte.setBounds(width * 85 / 100, height * 85 / 100, width * 12 / 100, height * 6 / 100);
+        fondo.add(btnReporte);
 
         btnReporte.addActionListener(e -> {
             ReporteInventarioPDF.generar(usuarioActual);
-            JOptionPane.showMessageDialog(this, "Reporte generado con exito");
+            JOptionPane.showMessageDialog(this, "Reporte generado con éxito");
         });
 
         // Botón Atrás
         JButton btnAtras = new JButton("Atrás");
-        btnAtras.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnAtras.setBounds(30, 540, 100, 35);
-        add(btnAtras);
+        btnAtras.setFont(fLabel);
+        btnAtras.setBounds(width * 3 / 100, height * 85 / 100, width * 10 / 100, height * 6 / 100);
+        fondo.add(btnAtras);
 
         btnAtras.addActionListener(e -> {
             new MenuPrincipal(usuarioActual != null ? usuarioActual : new modelo.Usuario()).setVisible(true);
             dispose();
         });
 
-        // --- BOTÓN AGREGAR ---
-        lblFecha = new JLabel("   --/--/--");
-        lblFecha.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        int exportarX = btnExportar.getX();
+        int exportarY = btnExportar.getY();
+        int exportarW = btnExportar.getWidth();
+        int exportarH = btnExportar.getHeight();
+
+        // Fecha y hora
+        lblFecha = new JLabel("--/--/--");
+        lblFecha.setFont(fLabel);
         lblFecha.setForeground(Color.WHITE);
-        lblFecha.setBounds(820, 95, 120, 30);
+        // justo a la derecha del botón
+        lblFecha.setBounds(exportarX + exportarW + 20, exportarY, width * 8 / 100, exportarH);
         fondo.add(lblFecha);
 
-        lblHora = new JLabel("   00:00");
-        lblHora.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblHora = new JLabel("00:00");
+        lblHora.setFont(fLabel);
         lblHora.setForeground(Color.WHITE);
-        lblHora.setBounds(920, 95, 100, 30);
+        // a la derecha de la fecha
+        lblHora.setBounds(lblFecha.getX() + lblFecha.getWidth() + 20, exportarY, width * 8 / 100, exportarH);
         fondo.add(lblHora);
 
         // Tabla
@@ -139,13 +154,14 @@ public class VistaInventario extends JFrame {
 
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tablaInventario = new JTable(modelo);
-        tablaInventario.setRowHeight(25);
+        tablaInventario.setFont(new Font("Segoe UI", Font.PLAIN, fontSize));
+        tablaInventario.setRowHeight(height * 4 / 100);
 
         JScrollPane scroll = new JScrollPane(tablaInventario);
-        scroll.setBounds(30, 150, 930, 380);
+        scroll.setBounds(width * 3 / 100, height * 20 / 100, width * 94 / 100, height * 60 / 100);
         fondo.add(scroll);
 
-        // 🔥 LISTENERS (ahora que los botones existen)
+        // Listeners
         btnBuscar.addActionListener(e -> buscarProducto());
         btnAgregar.addActionListener(e -> agregarProducto());
         btnEditar.addActionListener(e -> editarProducto());
@@ -163,7 +179,10 @@ public class VistaInventario extends JFrame {
         private Image imagen;
 
         public FondoPanel(String ruta) {
-            this.imagen = new ImageIcon(getClass().getResource("/images/fondoLila.png")).getImage();
+            java.net.URL res = getClass().getResource(ruta);
+            if (res != null) {
+                imagen = new ImageIcon(res).getImage();
+            }
         }
 
         @Override
@@ -178,8 +197,8 @@ public class VistaInventario extends JFrame {
     private void iniciarReloj() {
         timer = new Timer(1000, e -> {
             Date now = new Date();
-            lblFecha.setText(new SimpleDateFormat("  dd/MM/yy").format(now));
-            lblHora.setText(new SimpleDateFormat("   HH:mm:ss").format(now));
+            lblFecha.setText(new SimpleDateFormat("dd/MM/yy").format(now));
+            lblHora.setText(new SimpleDateFormat("HH:mm:ss").format(now));
         });
         timer.start();
     }
@@ -187,7 +206,6 @@ public class VistaInventario extends JFrame {
     private void cargarProductos() {
         DefaultTableModel modelo = (DefaultTableModel) tablaInventario.getModel();
         modelo.setRowCount(0);
-
         List<Producto> lista = controlador.listarProductos();
         for (Producto p : lista) {
             modelo.addRow(new Object[]{
@@ -203,19 +221,15 @@ public class VistaInventario extends JFrame {
         String filtro = txtBuscar.getText().trim().toLowerCase();
         DefaultTableModel modelo = (DefaultTableModel) tablaInventario.getModel();
         modelo.setRowCount(0);
-
         for (Producto p : controlador.listarProductos()) {
             if (p.getNombre().toLowerCase().contains(filtro)
                     || p.getCodigo().toLowerCase().contains(filtro)) {
-
                 modelo.addRow(new Object[]{
                     p.getId(), p.getCodigo(), p.getNombre(), p.getStock(),
                     p.getStockMin(), p.getPrecio(), p.getFechaVencimiento(),
                     p.getUnidad(), p.getCategoriaId(),
-                    p.getProveedorNombre(), // ← ESTA ERA LA QUE FALTABA
-                    p.getProveedorTelefono()
+                    p.getProveedorNombre(), p.getProveedorTelefono()
                 });
-
             }
         }
     }

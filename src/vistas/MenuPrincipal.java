@@ -15,7 +15,7 @@ public class MenuPrincipal extends JFrame {
         setSize(600, 500); // ← Agrandado para que entre el botón
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         // Fondo
         FondoPanel fondo = new FondoPanel("/images/fondoLila.png");
         fondo.setLayout(new GridBagLayout());

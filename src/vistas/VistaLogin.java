@@ -17,6 +17,7 @@ public class VistaLogin extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // ✅ Panel con imagen de fondo usando recurso interno
         JPanel panelFondo = new JPanel() {
