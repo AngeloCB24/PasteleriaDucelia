@@ -6,9 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class VistaLogin extends JFrame {
+
     private JTextField txtUsuario;
     private JPasswordField txtContrasena;
     private final ControladorLogin controlador;
+    private JButton btnCerrar;
 
     public VistaLogin() {
         controlador = new ControladorLogin();
@@ -18,6 +20,23 @@ public class VistaLogin extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        btnCerrar = new JButton("Cerrar");
+        btnCerrar.setBackground(Color.RED);
+        btnCerrar.setForeground(Color.WHITE);
+
+        btnCerrar.addActionListener(e -> {
+            int opcion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Estás seguro de que deseas cerrar la aplicación?",
+                    "Confirmar salida",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            if (opcion == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
+        });
 
         // ✅ Panel con imagen de fondo usando recurso interno
         JPanel panelFondo = new JPanel() {
@@ -51,6 +70,7 @@ public class VistaLogin extends JFrame {
         panelLogin.setPreferredSize(new Dimension(400, 250));
         panelLogin.setBorder(BorderFactory.createTitledBorder("Acceso al sistema"));
         panelLogin.setBackground(new Color(255, 255, 255, 180));
+        panelLogin.add(btnCerrar);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -62,19 +82,28 @@ public class VistaLogin extends JFrame {
         txtContrasena = new JPasswordField(20);
         JButton btnLogin = new JButton("Ingresar");
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         panelLogin.add(lblUsuario, gbc);
         gbc.gridx = 1;
         panelLogin.add(txtUsuario, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         panelLogin.add(lblContrasena, gbc);
         gbc.gridx = 1;
         panelLogin.add(txtContrasena, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         panelLogin.add(btnLogin, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelLogin.add(btnCerrar, gbc);
 
         panelFondo.add(panelLogin, gbc);
         add(panelFondo, BorderLayout.CENTER);

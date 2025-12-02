@@ -304,9 +304,21 @@ public class FormProducto extends JFrame {
             throw new IllegalArgumentException("Código requerido");
         }
 
+        // VALIDACIONES IMPORTANTES
         int stock = stockTxt.isEmpty() ? 0 : Integer.parseInt(stockTxt);
+        if (stock < 0) {
+            throw new IllegalArgumentException("El stock no puede ser negativo");
+        }
+
         int stockMin = stockMinTxt.isEmpty() ? 0 : Integer.parseInt(stockMinTxt);
+        if (stockMin < 0) {
+            throw new IllegalArgumentException("El stock mínimo no puede ser negativo");
+        }
+
         double precio = precioTxt.isEmpty() ? 0.0 : Double.parseDouble(precioTxt);
+        if (precio < 0) {
+            throw new IllegalArgumentException("El precio no puede ser negativo");
+        }
 
         p.setCodigo(codigo);
         p.setNombre(nombre);
@@ -315,9 +327,10 @@ public class FormProducto extends JFrame {
         p.setPrecio(precio);
         p.setUnidad((String) cmbUnidad.getSelectedItem());
 
+        // fecha
         java.util.Date fecha = (java.util.Date) spFecha.getValue();
         if (fecha != null) {
-            p.setFechaVencimiento(new Date(fecha.getTime()));
+            p.setFechaVencimiento(new java.sql.Date(fecha.getTime()));
         } else {
             p.setFechaVencimiento(null);
         }
@@ -332,7 +345,6 @@ public class FormProducto extends JFrame {
             p.setProveedorId(prov.getId());
         }
 
-        // opcional: descripción no está en el formulario; si tu modelo la tiene y quieres añadirlo, hazlo aquí.
         p.setDescripcion(txtDescripcion.getText().trim());
 
         return p;

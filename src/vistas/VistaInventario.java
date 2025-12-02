@@ -26,10 +26,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import modelo.MovimientoInventario;
+import modelo.Usuario;
 
 public class VistaInventario extends JFrame {
 
-    private modelo.Usuario usuarioActual;
+    private Usuario usuarioActual;
     private JTextField txtBuscar;
     private JTable tablaInventario;
     private JButton btnBuscar, btnAgregar, btnEditar, btnEliminar, btnExportar, btnReporte;
@@ -40,6 +41,7 @@ public class VistaInventario extends JFrame {
     public VistaInventario(modelo.Usuario usuario) {
         this.usuarioActual = usuario;
         init();
+        configurarPermisos();
     }
 
     public void init() {
@@ -175,6 +177,32 @@ public class VistaInventario extends JFrame {
         iniciarReloj();
     }
 
+    private void configurarPermisos() {
+        if (usuarioActual == null) {
+            return;
+        }
+
+        int idRol = usuarioActual.getIdRol(); // tu getter correcto
+
+        // Si rol = 2 → usuario normal, sin permisos de edición
+        if (idRol == 2) {
+
+            btnAgregar.setEnabled(false);
+            btnEditar.setEnabled(false);
+            btnEliminar.setEnabled(false);
+            btnExportar.setEnabled(false);
+            btnReporte.setEnabled(false);
+
+            // Opcional: cambiar color para que se note que no se puede usar
+            Color c = new Color(160, 160, 160); // gris
+            btnAgregar.setBackground(c);
+            btnEditar.setBackground(c);
+            btnEliminar.setBackground(c);
+            btnExportar.setBackground(c);
+            btnReporte.setBackground(c);
+        }
+    }
+
     // Panel personalizado
     static class FondoPanel extends JPanel {
 
@@ -291,7 +319,7 @@ public class VistaInventario extends JFrame {
         mov.setNote("Eliminación de producto");
         mov.setDate(new java.sql.Timestamp(System.currentTimeMillis()));
         mov.setReference("DELETE");
-        
+
         try {
             movDAO.registrarMovimiento(mov);
         } catch (SQLException e) {

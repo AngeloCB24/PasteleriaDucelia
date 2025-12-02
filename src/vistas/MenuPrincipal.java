@@ -1,5 +1,6 @@
 package vistas;
 
+import controlador.ControladorLogin;
 import modelo.Usuario;
 import javax.swing.*;
 import java.awt.*;
@@ -7,6 +8,11 @@ import java.awt.*;
 public class MenuPrincipal extends JFrame {
 
     private final Usuario usuario;
+
+    private JButton btnVentas;
+    private JButton btnInventario;
+    private JButton btnProveedores;
+    private JButton btnCerrar;
 
     public MenuPrincipal(Usuario usuario) {
         this.usuario = usuario;
@@ -26,15 +32,10 @@ public class MenuPrincipal extends JFrame {
         titulo.setForeground(Color.WHITE);
 
         // Botones
-        JButton btnVentas = new JButton("Gestión de Ventas");
-        JButton btnInventario = new JButton("Gestión de Inventario");
-        JButton btnProveedores = new JButton("Gestión de Proveedores");
-
-        // Botón Cerrar Aplicación 🔴
-        JButton btnCerrar = new JButton("Cerrar Aplicación");
-        btnCerrar.setBackground(Color.RED);
-        btnCerrar.setForeground(Color.WHITE);
-        btnCerrar.setFocusPainted(false);
+        btnVentas = new JButton("Gestión de Ventas");
+        btnInventario = new JButton("Gestión de Inventario");
+        btnProveedores = new JButton("Gestión de Proveedores");
+        btnCerrar = new JButton("Cerrar Aplicación");
 
         // Tamaño uniforme
         Dimension d = new Dimension(200, 40);
@@ -43,7 +44,35 @@ public class MenuPrincipal extends JFrame {
         btnProveedores.setPreferredSize(d);
         btnCerrar.setPreferredSize(d);
 
+        // Botón Cerrar Aplicación 
+        btnCerrar = new JButton("Cerrar Aplicación");
+        btnCerrar.setBackground(Color.RED);
+        btnCerrar.setForeground(Color.WHITE);
+        btnCerrar.setFocusPainted(false);
+
+        // Boton Cerar Sesion 
+        JButton btnCerrarSesion = new JButton("Cerrar Sesión");
+        btnCerrarSesion.setBackground(new Color(255, 140, 0));
+        btnCerrarSesion.setForeground(Color.WHITE);
+        btnCerrarSesion.setFocusPainted(false);
+        btnCerrarSesion.setPreferredSize(d);
+
         // Acciones
+        btnCerrarSesion.addActionListener(e -> {
+            int resp = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Deseas cerrar sesión?",
+                    "Cerrar sesión",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (resp == JOptionPane.YES_OPTION) {
+                new VistaLogin().setVisible(true); // ⬅️ Aquí coloca el nombre de tu ventana de login
+                dispose();
+            }
+        });
+
         btnVentas.addActionListener(e -> {
             new VistaVentas(usuario).setVisible(true);
             dispose();
@@ -73,9 +102,14 @@ public class MenuPrincipal extends JFrame {
             }
         });
 
+        configurarPermisos();
+
         // --- Layout ---
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
+
+        gbc.gridy = 5;
+        fondo.add(btnCerrar, gbc);
 
         gbc.gridx = 0;
 
@@ -91,8 +125,25 @@ public class MenuPrincipal extends JFrame {
         gbc.gridy = 3;
         fondo.add(btnProveedores, gbc);
 
-        gbc.gridy = 4; // ← ABAJO DEL TODO
+        gbc.gridy = 4;
+        fondo.add(btnCerrarSesion, gbc);
+
+        gbc.gridy = 5;
         fondo.add(btnCerrar, gbc);
+    }
+
+    private void configurarPermisos() {
+        int rol = usuario.getIdRol(); // ← aquí llamas a tu getter REAL
+
+        // Si el rol es USER (por ejemplo 2)
+        if (rol == 2) {
+
+            // Desactivar proveedores
+            btnProveedores.setEnabled(false);
+
+            // ⚠️ Opcional: cambiar texto para que se vea bonito
+            btnProveedores.setText("Proveedores (No permitido)");
+        }
     }
 
     // Fondo personalizado
