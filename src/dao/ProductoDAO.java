@@ -183,14 +183,29 @@ public class ProductoDAO {
     }
 
     public boolean eliminar(int id) {
-        String sql = "DELETE FROM products WHERE id = ?";
-        try (Connection c = ConexionBD.getConexion(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            return ps.executeUpdate() == 1;
+        String eliminarMovimientos = "DELETE FROM inventory_movements WHERE product_id = ?";
+        String eliminarProducto = "DELETE FROM products WHERE id = ?";
+
+        try (Connection conn = ConexionBD.getConexion()) {
+
+            // 1. eliminar movimientos del producto
+            try (PreparedStatement psMov = conn.prepareStatement(eliminarMovimientos)) {
+                psMov.setInt(1, id);
+                psMov.executeUpdate();
+            }
+
+            // 2. eliminar producto
+            try (PreparedStatement psProd = conn.prepareStatement(eliminarProducto)) {
+                psProd.setInt(1, id);
+                psProd.executeUpdate();
+            }
+
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     // actualizar stock (positivo/negativo) de forma segura

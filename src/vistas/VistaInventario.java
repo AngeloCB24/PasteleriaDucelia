@@ -1,7 +1,9 @@
 package vistas;
 
 import controlador.ControladorInventario;
+import dao.MovimientoInventarioDAO;
 import modelo.Producto;
+import java.sql.SQLException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -23,6 +25,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import modelo.MovimientoInventario;
 
 public class VistaInventario extends JFrame {
 
@@ -45,7 +48,6 @@ public class VistaInventario extends JFrame {
 
         // Pantalla completa
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUndecorated(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         FondoPanel fondo = new FondoPanel("/images/fondoLila.png");
@@ -147,7 +149,7 @@ public class VistaInventario extends JFrame {
 
         // Tabla
         String[] columnas = {
-            "ID", "Código", "Nombre", "Stock",
+            "ID", "Código", "Nombre", "Descripción", "Stock",
             "Stock Mínimo", "Precio", "F. Venc",
             "Unidad", "Categoría", "Proveedor", "Teléfono"
         };
@@ -209,7 +211,7 @@ public class VistaInventario extends JFrame {
         List<Producto> lista = controlador.listarProductos();
         for (Producto p : lista) {
             modelo.addRow(new Object[]{
-                p.getId(), p.getCodigo(), p.getNombre(), p.getStock(),
+                p.getId(), p.getCodigo(), p.getNombre(), p.getDescripcion(), p.getStock(),
                 p.getStockMin(), p.getPrecio(), p.getFechaVencimiento(),
                 p.getUnidad(), p.getCategoriaId(),
                 p.getProveedorNombre(), p.getProveedorTelefono()
@@ -223,9 +225,10 @@ public class VistaInventario extends JFrame {
         modelo.setRowCount(0);
         for (Producto p : controlador.listarProductos()) {
             if (p.getNombre().toLowerCase().contains(filtro)
-                    || p.getCodigo().toLowerCase().contains(filtro)) {
+                    || p.getCodigo().toLowerCase().contains(filtro)
+                    || (p.getDescripcion() != null && p.getDescripcion().toLowerCase().contains(filtro))) {
                 modelo.addRow(new Object[]{
-                    p.getId(), p.getCodigo(), p.getNombre(), p.getStock(),
+                    p.getId(), p.getCodigo(), p.getNombre(), p.getDescripcion(), p.getStock(),
                     p.getStockMin(), p.getPrecio(), p.getFechaVencimiento(),
                     p.getUnidad(), p.getCategoriaId(),
                     p.getProveedorNombre(), p.getProveedorTelefono()
@@ -235,7 +238,7 @@ public class VistaInventario extends JFrame {
     }
 
     private void agregarProducto() {
-        FormProducto form = new FormProducto(() -> cargarProductos());
+        FormProducto form = new FormProducto(() -> cargarProductos(), usuarioActual);
         form.setVisible(true);
     }
 
@@ -253,8 +256,7 @@ public class VistaInventario extends JFrame {
             JOptionPane.showMessageDialog(this, "Error: No se pudo cargar el producto.");
             return;
         }
-
-        FormProducto form = new FormProducto(producto, () -> cargarProductos());
+        FormProducto form = new FormProducto(producto, () -> cargarProductos(), usuarioActual);
         form.setVisible(true);
     }
 
@@ -266,12 +268,43 @@ public class VistaInventario extends JFrame {
         }
 
         int id = (int) tablaInventario.getValueAt(fila, 0);
-        int r = JOptionPane.showConfirmDialog(this, "¿Eliminar producto con ID " + id + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        String nombre = (String) tablaInventario.getValueAt(fila, 2);
+        int stock = (int) tablaInventario.getValueAt(fila, 4);
 
-        if (r == JOptionPane.YES_OPTION) {
-            if (controlador.eliminarProducto(id)) {
-                cargarProductos();
-            }
+        int r = JOptionPane.showConfirmDialog(this,
+                "¿Eliminar el producto:\n" + nombre + " ?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
+
+        if (r != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        // 1️⃣ Registrar movimiento OUT antes de borrar
+        MovimientoInventarioDAO movDAO = new MovimientoInventarioDAO();
+        MovimientoInventario mov = new MovimientoInventario();
+
+        mov.setProductId(id);
+        mov.setUserId(usuarioActual.getId());
+        mov.setQuantity(stock);
+        mov.setMovementType("OUT");
+        mov.setNote("Eliminación de producto");
+        mov.setDate(new java.sql.Timestamp(System.currentTimeMillis()));
+        mov.setReference("DELETE");
+        
+        try {
+            movDAO.registrarMovimiento(mov);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al registrar el movimiento: " + e.getMessage());
+        }
+        // 2️⃣ Ahora sí eliminar producto
+        if (controlador.eliminarProducto(id)) {
+            JOptionPane.showMessageDialog(this, "Producto eliminado correctamente");
+            cargarProductos();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al eliminar producto");
         }
     }
 

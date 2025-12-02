@@ -25,7 +25,6 @@ public class VistaProveedores extends JFrame {
 
         // Pantalla completa
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUndecorated(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Fondo

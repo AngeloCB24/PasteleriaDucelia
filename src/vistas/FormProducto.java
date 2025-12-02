@@ -1,6 +1,7 @@
 package vistas;
 
 import controlador.ControladorInventario;
+import dao.MovimientoInventarioDAO;
 import modelo.Producto;
 import modelo.Categoria;
 import modelo.Proveedor;
@@ -9,10 +10,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Date;
 import java.util.List;
+import modelo.MovimientoInventario;
+import modelo.Usuario;
 
 public class FormProducto extends JFrame {
 
-    private JTextField txtCodigo, txtNombre, txtStock, txtStockMin, txtPrecio;
+    private Usuario usuarioActual;
+    private JTextField txtCodigo, txtNombre, txtStock, txtStockMin, txtPrecio, txtDescripcion;
     private JComboBox<String> cmbUnidad;
     private JComboBox<Categoria> cbCategoria;
     private JComboBox<Proveedor> cbProveedor;
@@ -24,15 +28,17 @@ public class FormProducto extends JFrame {
     private Producto productoEdicion = null; // si no es null => modo EDIT
 
     // ---------- CONSTRUCTOR para CREAR ----------
-    public FormProducto(Runnable actualizarTabla) {
+    public FormProducto(Runnable actualizarTabla, Usuario usuarioActual) {
         this.callbackActualizarTabla = actualizarTabla;
+        this.usuarioActual = usuarioActual;
         initUI();
         setTitle("Agregar Producto");
     }
 
     // ---------- CONSTRUCTOR para EDITAR ----------
-    public FormProducto(Producto producto, Runnable actualizarTabla) {
+    public FormProducto(Producto producto, Runnable actualizarTabla, Usuario usuarioActual) {
         this.callbackActualizarTabla = actualizarTabla;
+        this.usuarioActual = usuarioActual;
         this.productoEdicion = producto;
         initUI();
         cargarDatosParaEdicion(producto);
@@ -41,7 +47,7 @@ public class FormProducto extends JFrame {
 
     // ---------- INICIALIZA UI COMÚN ----------
     private void initUI() {
-        setSize(450, 570);
+        setSize(450, 620);
         setLocationRelativeTo(null);
         setLayout(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -104,6 +110,10 @@ public class FormProducto extends JFrame {
         txtTelefono = addField(150, y);
         txtTelefono.setEditable(false);
 
+        y += 40;
+        addLabel("Descripción:", 30, y);
+        txtDescripcion = addField(150, y);
+
         // cargar combos
         cargarCategorias();
         cargarProveedores();
@@ -113,11 +123,11 @@ public class FormProducto extends JFrame {
 
         // BOTONES
         JButton btnGuardar = new JButton(productoEdicion == null ? "Guardar" : "Guardar Cambios");
-        btnGuardar.setBounds(80, 480, 140, 35);
+        btnGuardar.setBounds(80, 520, 140, 35);
         add(btnGuardar);
 
         JButton btnCancelar = new JButton("Cancelar");
-        btnCancelar.setBounds(240, 480, 120, 35);
+        btnCancelar.setBounds(240, 520, 120, 35);
         add(btnCancelar);
 
         btnCancelar.addActionListener(e -> dispose());
@@ -151,14 +161,18 @@ public class FormProducto extends JFrame {
 
     // cuando editamos, precargamos datos
     private void cargarDatosParaEdicion(Producto producto) {
-        if (producto == null) return;
+        if (producto == null) {
+            return;
+        }
 
         txtCodigo.setText(producto.getCodigo());
         txtNombre.setText(producto.getNombre());
         txtStock.setText(String.valueOf(producto.getStock()));
         txtStockMin.setText(String.valueOf(producto.getStockMin()));
         txtPrecio.setText(String.valueOf(producto.getPrecio()));
-        if (producto.getUnidad() != null) cmbUnidad.setSelectedItem(producto.getUnidad());
+        if (producto.getUnidad() != null) {
+            cmbUnidad.setSelectedItem(producto.getUnidad());
+        }
 
         // fecha (puede ser null)
         if (producto.getFechaVencimiento() != null) {
@@ -187,6 +201,10 @@ public class FormProducto extends JFrame {
                 }
             }
         }
+
+        if (producto.getDescripcion() != null) {
+            txtDescripcion.setText(producto.getDescripcion());
+        }
     }
 
     private void actualizarTelefono() {
@@ -206,8 +224,22 @@ public class FormProducto extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error al guardar.");
                 return;
             }
+
+            MovimientoInventarioDAO movDAO = new MovimientoInventarioDAO();
+            MovimientoInventario mov = new MovimientoInventario();
+
+            mov.setProductId(p.getId());
+            mov.setUserId(usuarioActual.getId()); // <-- CAMBIA ESTO por tu usuario actual
+            mov.setMovementType("IN");
+            mov.setQuantity(p.getStock());
+            mov.setNote("Registro inicial de producto");
+
+            movDAO.registrarMovimiento(mov);
+
             JOptionPane.showMessageDialog(this, "Producto guardado correctamente.");
-            if (callbackActualizarTabla != null) callbackActualizarTabla.run();
+            if (callbackActualizarTabla != null) {
+                callbackActualizarTabla.run();
+            }
             dispose();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Datos inválidos: " + ex.getMessage());
@@ -216,17 +248,39 @@ public class FormProducto extends JFrame {
 
     // Actualizar producto existente
     private void guardarCambios() {
-        if (productoEdicion == null) return;
+        if (productoEdicion == null) {
+            return;
+        }
 
         try {
             Producto p = leerProductoDesdeFormulario();
             p.setId(productoEdicion.getId());
+
+            int stockAnterior = productoEdicion.getStock();
+            int stockNuevo = p.getStock();
+            int diferencia = stockNuevo - stockAnterior;
+
+            if (diferencia != 0) {
+                MovimientoInventarioDAO movDAO = new MovimientoInventarioDAO();
+                MovimientoInventario mov = new MovimientoInventario();
+
+                mov.setProductId(productoEdicion.getId());
+                mov.setUserId(usuarioActual.getId()); // <-- CAMBIA ESTO por el usuario actual
+                mov.setQuantity(Math.abs(diferencia));
+                mov.setMovementType(diferencia > 0 ? "IN" : "OUT");
+                mov.setNote("Actualización de stock desde FormProducto");
+
+                movDAO.registrarMovimiento(mov);
+            }
+
             if (!controlador.actualizarProducto(p)) {
                 JOptionPane.showMessageDialog(this, "Error al actualizar.");
                 return;
             }
             JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.");
-            if (callbackActualizarTabla != null) callbackActualizarTabla.run();
+            if (callbackActualizarTabla != null) {
+                callbackActualizarTabla.run();
+            }
             dispose();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Datos inválidos: " + ex.getMessage());
@@ -243,8 +297,12 @@ public class FormProducto extends JFrame {
         String stockMinTxt = txtStockMin.getText().trim();
         String precioTxt = txtPrecio.getText().trim();
 
-        if (nombre.isEmpty()) throw new IllegalArgumentException("Nombre requerido");
-        if (codigo.isEmpty()) throw new IllegalArgumentException("Código requerido");
+        if (nombre.isEmpty()) {
+            throw new IllegalArgumentException("Nombre requerido");
+        }
+        if (codigo.isEmpty()) {
+            throw new IllegalArgumentException("Código requerido");
+        }
 
         int stock = stockTxt.isEmpty() ? 0 : Integer.parseInt(stockTxt);
         int stockMin = stockMinTxt.isEmpty() ? 0 : Integer.parseInt(stockMinTxt);
@@ -258,16 +316,24 @@ public class FormProducto extends JFrame {
         p.setUnidad((String) cmbUnidad.getSelectedItem());
 
         java.util.Date fecha = (java.util.Date) spFecha.getValue();
-        if (fecha != null) p.setFechaVencimiento(new Date(fecha.getTime()));
-        else p.setFechaVencimiento(null);
+        if (fecha != null) {
+            p.setFechaVencimiento(new Date(fecha.getTime()));
+        } else {
+            p.setFechaVencimiento(null);
+        }
 
         Categoria cat = (Categoria) cbCategoria.getSelectedItem();
         Proveedor prov = (Proveedor) cbProveedor.getSelectedItem();
 
-        if (cat != null) p.setCategoriaId(cat.getId());
-        if (prov != null) p.setProveedorId(prov.getId());
+        if (cat != null) {
+            p.setCategoriaId(cat.getId());
+        }
+        if (prov != null) {
+            p.setProveedorId(prov.getId());
+        }
 
         // opcional: descripción no está en el formulario; si tu modelo la tiene y quieres añadirlo, hazlo aquí.
+        p.setDescripcion(txtDescripcion.getText().trim());
 
         return p;
     }
