@@ -84,13 +84,13 @@ public class VistaVentas extends JFrame {
 
         JLabel lblTitulo = new JLabel("GESTIÓN DE VENTAS");
         lblTitulo.setFont(fTitulo);
-        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setForeground(Color.BLACK);
         lblTitulo.setBounds(width * 2 / 100, height * 2 / 100, width * 40 / 100, height * 5 / 100);
         fondo.add(lblTitulo);
 
         JLabel lblCliente = new JLabel("Cliente");
         lblCliente.setFont(fLabel);
-        lblCliente.setForeground(Color.WHITE);
+        lblCliente.setForeground(Color.BLACK);
         lblCliente.setBounds(width * 2 / 100, height * 10 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblCliente);
 
@@ -100,7 +100,7 @@ public class VistaVentas extends JFrame {
 
         JLabel lblPrecio = new JLabel("Precio");
         lblPrecio.setFont(fLabel);
-        lblPrecio.setForeground(Color.WHITE);
+        lblPrecio.setForeground(Color.BLACK);
         lblPrecio.setBounds(width * 30 / 100, height * 10 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblPrecio);
 
@@ -111,7 +111,7 @@ public class VistaVentas extends JFrame {
 
         JLabel lblDescripcion = new JLabel("Descripción");
         lblDescripcion.setFont(fLabel);
-        lblDescripcion.setForeground(Color.WHITE);
+        lblDescripcion.setForeground(Color.BLACK);
         lblDescripcion.setBounds(width * 55 / 100, height * 10 / 100, width * 15 / 100, height * 3 / 100);
         fondo.add(lblDescripcion);
 
@@ -123,7 +123,7 @@ public class VistaVentas extends JFrame {
 
         JLabel lblPostre = new JLabel("Postre");
         lblPostre.setFont(fLabel);
-        lblPostre.setForeground(Color.WHITE);
+        lblPostre.setForeground(Color.BLACK);
         lblPostre.setBounds(width * 2 / 100, height * 20 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblPostre);
 
@@ -133,7 +133,7 @@ public class VistaVentas extends JFrame {
 
         JLabel lblCantidad = new JLabel("Cantidad");
         lblCantidad.setFont(fLabel);
-        lblCantidad.setForeground(Color.WHITE);
+        lblCantidad.setForeground(Color.BLACK);
         lblCantidad.setBounds(width * 30 / 100, height * 20 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblCantidad);
 
@@ -161,25 +161,25 @@ public class VistaVentas extends JFrame {
 
         JLabel lblTotalTxt = new JLabel("Total:");
         lblTotalTxt.setFont(fLabel);
-        lblTotalTxt.setForeground(Color.WHITE);
+        lblTotalTxt.setForeground(Color.BLACK);
         lblTotalTxt.setBounds(width * 2 / 100, height * 78 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblTotalTxt);
 
         lblTotal = new JLabel("S/0.00");
         lblTotal.setFont(new Font("Segoe UI", Font.BOLD, fontSize + 15));
-        lblTotal.setForeground(Color.WHITE);
+        lblTotal.setForeground(Color.BLACK);
         lblTotal.setBounds(width * 10 / 100, height * 77 / 100, width * 20 / 100, height * 5 / 100);
         fondo.add(lblTotal);
 
         lblFecha = new JLabel();
         lblFecha.setFont(fLabel);
-        lblFecha.setForeground(Color.WHITE);
+        lblFecha.setForeground(Color.BLACK);
         lblFecha.setBounds(width * 70 / 100, height * 77 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblFecha);
 
         lblHora = new JLabel();
         lblHora.setFont(fLabel);
-        lblHora.setForeground(Color.WHITE);
+        lblHora.setForeground(Color.BLACK);
         lblHora.setBounds(width * 82 / 100, height * 77 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblHora);
 

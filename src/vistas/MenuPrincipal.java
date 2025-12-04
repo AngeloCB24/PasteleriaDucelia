@@ -29,7 +29,7 @@ public class MenuPrincipal extends JFrame {
 
         JLabel titulo = new JLabel("¿A qué módulo deseas ingresar?");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titulo.setForeground(Color.WHITE);
+        titulo.setForeground(Color.BLACK);
 
         // Botones
         btnVentas = new JButton("Gestión de Ventas");

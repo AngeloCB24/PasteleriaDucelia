@@ -68,14 +68,14 @@ public class VistaInventario extends JFrame {
         // --- Título ---
         JLabel lblTitulo = new JLabel("GESTIÓN DE INVENTARIO", SwingConstants.CENTER);
         lblTitulo.setFont(fTitulo);
-        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setForeground(Color.BLACK);
         lblTitulo.setBounds(0, height * 2 / 100, width, height * 5 / 100);
         fondo.add(lblTitulo);
 
         // --- Buscar ---
         JLabel lblBuscar = new JLabel("Buscar");
         lblBuscar.setFont(fLabel);
-        lblBuscar.setForeground(Color.WHITE);
+        lblBuscar.setForeground(Color.BLACK);
         lblBuscar.setBounds(width * 3 / 100, height * 10 / 100, width * 10 / 100, height * 3 / 100);
         fondo.add(lblBuscar);
 
@@ -137,14 +137,14 @@ public class VistaInventario extends JFrame {
         // Fecha y hora
         lblFecha = new JLabel("--/--/--");
         lblFecha.setFont(fLabel);
-        lblFecha.setForeground(Color.WHITE);
+        lblFecha.setForeground(Color.BLACK);
         // justo a la derecha del botón
         lblFecha.setBounds(exportarX + exportarW + 20, exportarY, width * 8 / 100, exportarH);
         fondo.add(lblFecha);
 
         lblHora = new JLabel("00:00");
         lblHora.setFont(fLabel);
-        lblHora.setForeground(Color.WHITE);
+        lblHora.setForeground(Color.BLACK);
         // a la derecha de la fecha
         lblHora.setBounds(lblFecha.getX() + lblFecha.getWidth() + 20, exportarY, width * 8 / 100, exportarH);
         fondo.add(lblHora);

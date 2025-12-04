@@ -43,7 +43,7 @@ public class VistaProveedores extends JFrame {
 
         JLabel lblTitulo = new JLabel("GESTIÓN DE PROVEEDORES", SwingConstants.CENTER);
         lblTitulo.setFont(fTitulo);
-        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setForeground(Color.BLACK);
         lblTitulo.setBounds(0, height * 2 / 100, width, height * 5 / 100);
         fondo.add(lblTitulo);
 
